@@ -152,3 +152,95 @@ _ = p.set(xticklabels = "", xlim = [0, 1], ylabel = "No. of Books", xlabel = "Pr
 #4. Commanders in each army
 p = sns.boxplot("att_comm_count", "attacker_king", data = battles, saturation = .6, fliersize = 10., palette = ["lightgray", sns.color_palette()[1], "grey", "darkblue"])
 _ = p.set(xlabel = "No. of Attacker Commanders", ylabel = "Attacker King", xticks = range(8))
+
+
+#9. print("How does culture relate to survival?")
+cult = {
+    'Summer Islands': ['summer islands', 'summer islander', 'summer isles'],
+    'Ghiscari': ['ghiscari', 'ghiscaricari',  'ghis'],
+    'Asshai': ["asshai'i", 'asshai'],
+    'Lysene': ['lysene', 'lyseni'],
+    'Andal': ['andal', 'andals'],
+    'Braavosi': ['braavosi', 'braavos'],
+    'Dornish': ['dornishmen', 'dorne', 'dornish'],
+    'Myrish': ['myr', 'myrish', 'myrmen'],
+    'Westermen': ['westermen', 'westerman', 'westerlands'],
+    'Westerosi': ['westeros', 'westerosi'],
+    'Stormlander': ['stormlands', 'stormlander'],
+    'Norvoshi': ['norvos', 'norvoshi'],
+    'Northmen': ['the north', 'northmen'],
+    'Free Folk': ['wildling', 'first men', 'free folk'],
+    'Qartheen': ['qartheen', 'qarth'],
+    'Reach': ['the reach', 'reach', 'reachmen'],
+}
+
+def get_cult(value):
+    value = value.lower()
+    v = [k for (k, v) in cult.items() if value in v]
+    return v[0] if len(v) > 0 else value.title()
+character_predictions.loc[:, "culture"] = [get_cult(x) for x in character_predictions.culture.fillna("")]
+data1 = character_predictions.groupby(["culture", "isAlive"]).count()["S.No"].unstack().copy(deep = True)
+data1.loc[:, "total"]= data1.sum(axis = 1)
+p = data1[data1.index != ""].sort_values("total")[[0, 1]].plot.barh(stacked = True, rot = 0, figsize = (14, 12),)
+_ = p.set(xlabel = "No. of Characters", ylabel = "Culture"), p.legend(["Dead", "Alive"], loc = "lower right")
+
+
+#5. Army Size Differnece for wning side in Battles
+data = battles.dropna(subset = ["attacker_size", "defender_size"]).copy(deep = True)
+data = pd.concat([(data.attacker_size - data.defender_size).to_frame(), battles[["attacker_outcome"]]], axis = 1, join = "inner")
+data = data[data[0] != 0]
+p = data[0].plot.barh(figsize = (12, 8), width = .8, color = [sns.color_palette()[0] if x == "win" else sns.color_palette()[2] if x == "loss" else "white" for x in data.attacker_outcome.values])
+_ = p.legend(handles = [mpatches.Patch(color = sns.color_palette()[0], label = "Victory", aa = True), mpatches.Patch(color = sns.color_palette()[2], label = "Loss", aa = True)])
+_ = p.axvline(0, color = 'k'), p.set(yticklabels = battles.name.iloc[data.index].values, xlabel = "Difference in Army Size (attacker_size - defender_size)", ylabel = "Battle Name")
+
+
+#6. Region of Battle
+plt.figure(figsize=[10,4])
+battles.region.value_counts().plot(kind='bar')
+plt.title("Region Distribution") 
+plt.ylabel("count")
+plt.title("Regions involved in Battles") 
+plt.show()
+
+
+#9. Proportion of Death by Allegiance
+character_deaths_by_chapter = character_deaths.groupby('death_chapter' ).count()
+def plot_it(x=[], y=[], kind="plot", title="Your chart", xlabel="x-axis", ylabel="y-axis"):
+    """ This function plot different type of charts depending on args value. """
+    if kind == "plot":
+        plt.plot(x, y)
+    elif kind == "scatter":
+        plt.scatter(x, y)
+    elif kind == "bar":
+        plt.bar(x, y, color=np.random.rand(256,3))
+    else:
+        raise ValueError(kind + ' is not a supported type of chart.')
+    fig_size = plt.rcParams["figure.figsize"]
+    fig_size[0] = 26
+    fig_size[1] = 10
+    plt.rcParams["figure.figsize"] = fig_size
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.show()
+character_deaths['allegiances'].unique()
+character_deaths['allegiances'] = character_deaths['allegiances'].apply(lambda x: x.replace('House ', '').lower())
+df_characters_by_allegiances = character_deaths.groupby('allegiances').count()
+df_characters_by_allegiances[['name']]
+character_deaths['death_chapter'] = character_deaths['death_chapter'].fillna('none')
+df_dead_characters = character_deaths[character_deaths['death_chapter'] != 'none'].copy()
+character_deaths_by_allegiances = df_dead_characters.groupby('allegiances').count()
+character_deaths_by_allegiances[['name']]
+character_deaths_by_allegiances['death_proportion'] = character_deaths_by_allegiances['name'] / df_characters_by_allegiances['name']
+plot_it(character_deaths_by_allegiances.index, character_deaths_by_allegiances['death_proportion'], 'bar', 'Number of deaths by allegiances', 'Allegiances', 'Deaths')
+
+#10. Death By Number of Chapters
+plot_it(character_deaths_by_chapter.index, character_deaths_by_chapter['name'], 'plot', 'Evolution of the number of deaths through chapters', 'Chapter Number', 'Deaths')
+
+#15. print("How many chapters a character takes to die ?")
+df_dead_characters['alive_chapters'] = df_dead_characters['death_chapter'] - df_dead_characters['book_intro_chapter']
+df_dead_characters = df_dead_characters[df_dead_characters['alive_chapters'] >= 0]
+df_dead_characters[['alive_chapters']].head()
+print("Median of Chapter Character was alive: ",df_dead_characters['alive_chapters'].median())
+print("Character with most chapter before death: ",df_dead_characters.sort_values('alive_chapters', ascending=False).iloc[0])
+
