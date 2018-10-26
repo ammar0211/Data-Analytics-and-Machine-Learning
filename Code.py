@@ -301,3 +301,10 @@ Ocharacter_predictions = character_predictions.copy(deep=True)
 
 character_predictions.drop(["actual"], 1, inplace = True)
 
+#------------------ Feature Correlation ---------------------------------------
+
+sns.heatmap(character_predictions.corr(),annot=True,cmap='RdYlGn',linewidths=0.2) #character_predictions.corr()-->correlation matrix
+fig=plt.gcf()
+fig.set_size_inches(30,20)
+plt.show()
+
