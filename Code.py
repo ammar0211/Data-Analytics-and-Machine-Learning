@@ -244,3 +244,60 @@ df_dead_characters[['alive_chapters']].head()
 print("Median of Chapter Character was alive: ",df_dead_characters['alive_chapters'].median())
 print("Character with most chapter before death: ",df_dead_characters.sort_values('alive_chapters', ascending=False).iloc[0])
 
+
+#--------------------- character_predictions Cleansing -----------------------------------------
+
+#-------- culture induction -------
+cult = {
+    'Summer Islands': ['summer islands', 'summer islander', 'summer isles'],
+    'Ghiscari': ['ghiscari', 'ghiscaricari',  'ghis'],
+    'Asshai': ["asshai'i", 'asshai'],
+    'Lysene': ['lysene', 'lyseni'],
+    'Andal': ['andal', 'andals'],
+    'Braavosi': ['braavosi', 'braavos'],
+    'Dornish': ['dornishmen', 'dorne', 'dornish'],
+    'Myrish': ['myr', 'myrish', 'myrmen'],
+    'Westermen': ['westermen', 'westerman', 'westerlands'],
+    'Westerosi': ['westeros', 'westerosi'],
+    'Stormlander': ['stormlands', 'stormlander'],
+    'Norvoshi': ['norvos', 'norvoshi'],
+    'Northmen': ['the north', 'northmen'],
+    'Free Folk': ['wildling', 'first men', 'free folk'],
+    'Qartheen': ['qartheen', 'qarth'],
+    'Reach': ['the reach', 'reach', 'reachmen'],
+}
+
+def get_cult(value):
+    value = value.lower()
+    v = [k for (k, v) in cult.items() if value in v]
+    return v[0] if len(v) > 0 else value.title()
+
+character_predictions.loc[:, "culture"] = [get_cult(x) for x in character_predictions.culture.fillna("")]
+
+
+#-------- culture induction -------
+
+character_predictions.drop(["S.No","name", "alive", "pred", "plod", "isAlive", "dateOfBirth", "DateoFdeath"], 1, inplace = True)
+
+character_predictions.loc[:, "title"] = pd.factorize(character_predictions.title)[0]
+character_predictions.loc[:, "culture"] = pd.factorize(character_predictions.culture)[0]
+character_predictions.loc[:, "mother"] = pd.factorize(character_predictions.mother)[0]
+character_predictions.loc[:, "father"] = pd.factorize(character_predictions.father)[0]
+character_predictions.loc[:, "heir"] = pd.factorize(character_predictions.heir)[0]
+character_predictions.loc[:, "house"] = pd.factorize(character_predictions.house)[0]
+character_predictions.loc[:, "spouse"] = pd.factorize(character_predictions.spouse)[0]
+
+character_predictions.fillna(value = -1, inplace = True)
+''' $$ The code below usually works as a sample equilibrium. However in this case,
+ this equilibirium actually decrease our accuracy, all because the original 
+prediction character_predictions was released without any sample balancing. $$
+
+character_predictions = character_predictions[character_predictions.actual == 0].sample(350, random_state = 62).append(character_predictions[character_predictions.actual == 1].sample(350, random_state = 62)).copy(deep = True).astype(np.float64)
+
+'''
+Y = character_predictions.actual.values
+
+Ocharacter_predictions = character_predictions.copy(deep=True)
+
+character_predictions.drop(["actual"], 1, inplace = True)
+
