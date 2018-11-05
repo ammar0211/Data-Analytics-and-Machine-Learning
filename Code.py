@@ -308,3 +308,18 @@ fig=plt.gcf()
 fig.set_size_inches(30,20)
 plt.show()
 
+#------------------ Predicting ------------------------------------------------
+
+#---------- 1 RandomForest -----------------
+''' ATTENTION: This rf algorithm achieves 99%+ accuracy, this is because the \
+    original predictor-- the document releaser use exactly the same algorithm to predict!
+'''
+from sklearn.ensemble import RandomForestClassifier
+
+
+random_forest = RandomForestClassifier(n_estimators=100)
+
+random_forest.fit(character_predictions, Y)
+
+print('RandomForest Accuracy(original): ',random_forest.score(character_predictions, Y))
+
