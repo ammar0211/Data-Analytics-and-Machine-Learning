@@ -323,3 +323,13 @@ random_forest.fit(character_predictions, Y)
 
 print('RandomForest Accuracy(original): ',random_forest.score(character_predictions, Y))
 
+#---------- 2 DecisionTree -----------------
+
+from sklearn.tree import DecisionTreeClassifier
+
+DT=DecisionTreeClassifier()
+
+DT.fit(character_predictions,Y)
+
+print('DecisionTree Accuracy(original)： ',DT.score(character_predictions, Y))
+
