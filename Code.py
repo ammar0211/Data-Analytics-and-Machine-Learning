@@ -333,3 +333,11 @@ DT.fit(character_predictions,Y)
 
 print('DecisionTree Accuracy(original)： ',DT.score(character_predictions, Y))
 
+#---------- 3 SVC -----------------
+
+from sklearn.svm import SVC, LinearSVC
+svc = SVC()
+
+svc.fit(character_predictions, Y)
+
+print('SVC Accuracy： ',svc.score(character_predictions, Y))
