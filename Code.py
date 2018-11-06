@@ -341,3 +341,13 @@ svc = SVC()
 svc.fit(character_predictions, Y)
 
 print('SVC Accuracy： ',svc.score(character_predictions, Y))
+
+#---------- 4 LogisticRegression -----------------
+
+from sklearn.linear_model import LogisticRegression
+
+LR = LogisticRegression()
+
+LR.fit(character_predictions, Y)
+
+print('LogisticRegression Accuracy： ',LR.score(character_predictions, Y))
