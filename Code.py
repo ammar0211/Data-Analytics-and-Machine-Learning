@@ -371,3 +371,11 @@ gaussian = GaussianNB()
 gaussian.fit(character_predictions, Y)
 
 print('gaussian Accuracy： ',gaussian.score(character_predictions, Y))
+
+#---------- 7 LogisticRegression with Cross Validation-----------------
+from sklearn.linear_model import LogisticRegression
+from sklearn import cross_validation
+predictors=['title', 'culture', 'mother', 'father', 'heir', 'house', 'spouse', 'male', 'book1', 'book2', 'book3', 'book4', 'book5', 'isAliveFather', 'isAliveMother', 'isAliveHeir', 'isAliveSpouse', 'isMarried', 'isNoble', 'age', 'numDeadRelations', 'boolDeadRelations', 'isPopular', 'popularity']
+alg=LogisticRegression(random_state=1)
+scores=cross_validation.cross_val_score(alg,Ocharacter_predictions[predictors],Ocharacter_predictions["actual"],cv=3)
+print('Logistic CrossValidation Accuracy： ',scores.mean())
