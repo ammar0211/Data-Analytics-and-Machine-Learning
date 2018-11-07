@@ -361,3 +361,13 @@ knn = KNeighborsClassifier(n_neighbors = 3)
 knn.fit(character_predictions, Y)
 
 print('kNN Accuracy： ',knn.score(character_predictions, Y))
+
+#---------- 6 NaiveBayes Gaussian -----------------
+
+from sklearn.naive_bayes import GaussianNB
+
+gaussian = GaussianNB()
+
+gaussian.fit(character_predictions, Y)
+
+print('gaussian Accuracy： ',gaussian.score(character_predictions, Y))
