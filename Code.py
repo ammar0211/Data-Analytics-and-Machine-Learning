@@ -401,3 +401,13 @@ predictions[predictions<=.5]=0
 accuracy=sum(predictions==Ocharacter_predictions["actual"])/len(predictions)
 print('LinearRegression Accuracy： ',accuracy)
 
+#---------- 9 RandomForest with CrossValidation -----------------
+
+from sklearn import cross_validation
+from sklearn.ensemble import RandomForestClassifier
+predictors=['title', 'culture', 'mother', 'father', 'heir', 'house', 'spouse', 'male', 'book1', 'book2', 'book3', 'book4', 'book5', 'isAliveFather', 'isAliveMother', 'isAliveHeir', 'isAliveSpouse', 'isMarried', 'isNoble', 'age', 'numDeadRelations', 'boolDeadRelations', 'isPopular', 'popularity']
+alg=RandomForestClassifier(random_state=1,n_estimators=150,min_samples_split=12,min_samples_leaf=1)
+kf=cross_validation.KFold(Ocharacter_predictions.shape[0],n_folds=3,random_state=1)
+scores=cross_validation.cross_val_score(alg,Ocharacter_predictions[predictors],Ocharacter_predictions["actual"],cv=kf)
+print('RandomForest Accuracy： ',scores.mean())
+
