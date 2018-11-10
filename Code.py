@@ -411,3 +411,30 @@ kf=cross_validation.KFold(Ocharacter_predictions.shape[0],n_folds=3,random_state
 scores=cross_validation.cross_val_score(alg,Ocharacter_predictions[predictors],Ocharacter_predictions["actual"],cv=kf)
 print('RandomForest Accuracy： ',scores.mean())
 
+#---------- 10 GradientBoosting -----------------
+
+from sklearn.cross_validation import KFold
+from sklearn.ensemble import GradientBoostingClassifier
+
+algorithms=[
+        [GradientBoostingClassifier(random_state=1,n_estimators=25,max_depth=3),['title', 'culture', 'mother', 'father', 'heir', 'house', 'spouse', 'male', 'book1', 'book2', 'book3', 'book4', 'book5', 'isAliveFather', 'isAliveMother', 'isAliveHeir', 'isAliveSpouse', 'isMarried', 'isNoble', 'age', 'numDeadRelations', 'boolDeadRelations', 'isPopular', 'popularity']],
+        [LogisticRegression(random_state=1),['title', 'culture', 'mother', 'father', 'heir', 'house', 'spouse', 'male', 'book1', 'book2', 'book3', 'book4', 'book5', 'isAliveFather', 'isAliveMother', 'isAliveHeir', 'isAliveSpouse', 'isMarried', 'isNoble', 'age', 'numDeadRelations', 'boolDeadRelations', 'isPopular', 'popularity']]]
+ 
+ 
+kf=KFold(Ocharacter_predictions.shape[0],n_folds=3,random_state=1)
+predictions=[]
+for train,test in kf:
+    train_target=Ocharacter_predictions["actual"].iloc[train]
+    full_test_predictions=[]
+    for alg,predictors in algorithms:
+        alg.fit(Ocharacter_predictions[predictors].iloc[train,:],train_target)
+        test_predictions=alg.predict_proba(Ocharacter_predictions[predictors].iloc[test,:].astype(float))[:,1]
+        full_test_predictions.append(test_predictions)
+    test_predictions=(full_test_predictions[0]+full_test_predictions[1])/2
+    test_predictions[test_predictions<=.5]=0
+    test_predictions[test_predictions>.5]=1
+    predictions.append(test_predictions)
+
+predictions=np.concatenate(predictions,axis=0)
+accuracy=sum(predictions==Ocharacter_predictions["actual"])/len(predictions)
+print('GradientBoosting Accuracy: ',accuracy)
