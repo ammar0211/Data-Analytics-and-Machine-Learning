@@ -438,3 +438,14 @@ for train,test in kf:
 predictions=np.concatenate(predictions,axis=0)
 accuracy=sum(predictions==Ocharacter_predictions["actual"])/len(predictions)
 print('GradientBoosting Accuracy: ',accuracy)
+
+# Bagging
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import cross_val_predict
+
+# Bagged KNN
+from sklearn.ensemble import BaggingClassifier
+model=BaggingClassifier(base_estimator=KNeighborsClassifier(n_neighbors=3),random_state=0,n_estimators=700)
+model.fit(character_predictions,Y)
+result=cross_val_score(model,character_predictions,Y,cv=10,scoring='accuracy')
+print('The cross validated score for bagged KNN is: ',result.mean())
