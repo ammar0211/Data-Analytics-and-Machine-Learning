@@ -449,3 +449,10 @@ model=BaggingClassifier(base_estimator=KNeighborsClassifier(n_neighbors=3),rando
 model.fit(character_predictions,Y)
 result=cross_val_score(model,character_predictions,Y,cv=10,scoring='accuracy')
 print('The cross validated score for bagged KNN is: ',result.mean())
+
+# Bagged Decision Tree
+
+model=BaggingClassifier(base_estimator=DecisionTreeClassifier(),random_state=0,n_estimators=100)
+model.fit(character_predictions,Y)
+result=cross_val_score(model,character_predictions,Y,cv=10,scoring='accuracy')
+print('The cross validated score for bagged Decision Tree is: ',result.mean())
