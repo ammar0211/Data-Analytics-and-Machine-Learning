@@ -456,3 +456,32 @@ model=BaggingClassifier(base_estimator=DecisionTreeClassifier(),random_state=0,n
 model.fit(character_predictions,Y)
 result=cross_val_score(model,character_predictions,Y,cv=10,scoring='accuracy')
 print('The cross validated score for bagged Decision Tree is: ',result.mean())
+
+#------------------------ Boosting --------------------------------------------
+
+from sklearn.ensemble import AdaBoostClassifier
+ada=AdaBoostClassifier(n_estimators=200,random_state=0,learning_rate=0.1)
+result=cross_val_score(ada,character_predictions,Y,cv=10,scoring='accuracy')
+print('The cross validated score for AdaBoost is: ',result.mean())
+
+
+from sklearn.ensemble import GradientBoostingClassifier
+grad=GradientBoostingClassifier(n_estimators=500,random_state=0,learning_rate=0.1)
+result=cross_val_score(grad,character_predictions,Y,cv=10,scoring='accuracy')
+print('The cross validated score for Gradient Boosting is: ',result.mean())
+
+f,ax=plt.subplots(2,2,figsize=(15,12))
+model=RandomForestClassifier(n_estimators=500,random_state=0)
+model.fit(character_predictions,Y)
+pd.Series(model.feature_importances_,character_predictions.columns).sort_values(ascending=True).plot.barh(width=0.8,ax=ax[0,0])
+ax[0,0].set_title('Feature Importance in Random Forests')
+model=AdaBoostClassifier(n_estimators=200,learning_rate=0.05,random_state=0)
+model.fit(character_predictions,Y)
+pd.Series(model.feature_importances_,character_predictions.columns).sort_values(ascending=True).plot.barh(width=0.8,ax=ax[0,1],color='#ddff11')
+ax[0,1].set_title('Feature Importance in AdaBoost')
+model=GradientBoostingClassifier(n_estimators=500,learning_rate=0.1,random_state=0)
+model.fit(character_predictions,Y)
+pd.Series(model.feature_importances_,character_predictions.columns).sort_values(ascending=True).plot.barh(width=0.8,ax=ax[1,0],cmap='RdYlGn_r')
+ax[1,0].set_title('Feature Importance in Gradient Boosting')
+plt.show()
+
